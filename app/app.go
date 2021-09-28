@@ -22,7 +22,7 @@ func StartApp() {
 	greetingRepositoryDb := repository.NewGreetingRepositoryDb(db)
 	gs := handlers.NewGreetingService(greetingRepositoryDb)
 
-	router.HandleFunc("/{slug}", gs.GetGreeting).Methods(http.MethodGet)
+	router.HandleFunc("/{name}", gs.GetGreeting).Methods(http.MethodGet)
 
 	address := os.Getenv("ADDRESS_NAME")
 	port := os.Getenv("PORT_NAME")
@@ -33,7 +33,7 @@ func StartApp() {
 
 func ConnectDB() *sqlx.DB {
 
-	dataSource := fmt.Sprintf("root:I240959ko@tcp(localhost:3306)/greetings")
+	dataSource := fmt.Sprintf("root:I240959ko@tcp(localhost:3306)/iko_cards")
 	client, err := sqlx.Open("mysql", dataSource)
 	if err != nil || client == nil {
 		log.Fatal("Error while opening DB: ", err)

@@ -4,9 +4,9 @@ import "greetings/err"
 
 // domain
 type GreetingResponse struct {
-	Slug string `json:"Name"`
-	Video string `json:"Video"`
-	Preview string `json:"Preview"`
+	Slug string `db:"slug"`
+	Video string
+	Preview string
 }
 
 // primary port

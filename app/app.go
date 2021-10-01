@@ -16,23 +16,25 @@ import (
 //  PORT_NAME=8000 ADDRESS_NAME=localhost go run .
 
 func StartApp() {
+//set router
 	router := mux.NewRouter()
-
+// establish DB connection
 	db := ConnectDB()
+// wiring
 	greetingRepositoryDb := repository.NewGreetingRepositoryDb(db)
 	gs := handlers.NewGreetingService(greetingRepositoryDb)
-
-	router.HandleFunc("/{name}", gs.GetGreeting).Methods(http.MethodGet)
-
+// declare routes
+	router.HandleFunc("/name/{name}", gs.GetGreetingByName).Methods(http.MethodGet)
+	router.HandleFunc("/age/{age}", gs.GetGreetingByAge).Methods(http.MethodGet)
+// set environment variables
 	address := os.Getenv("ADDRESS_NAME")
 	port := os.Getenv("PORT_NAME")
-
+// listen and serve
 	log.Printf("Server is running at %s:%s", address, port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router))
 }
 
 func ConnectDB() *sqlx.DB {
-
 	dataSource := fmt.Sprintf("root:I240959ko@tcp(localhost:3306)/iko_cards")
 	client, err := sqlx.Open("mysql", dataSource)
 	if err != nil || client == nil {

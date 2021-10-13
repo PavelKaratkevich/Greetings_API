@@ -7,6 +7,7 @@ import (
 
 // domain
 type GreetingResponse struct {
+	Name			string
 	Age 			string
 	Cardname 		string
 	Description_eng string
@@ -23,12 +24,15 @@ type GreetingRepository interface {
 	GetGreetingByAge(age string) ([]GreetingResponse, *err.Error)
 }
 
-
-func (d GreetingResponse) ToDto(name string) dto.Response {
+func (d GreetingResponse) ToDto() dto.Response {
 	return dto.Response{
-		Name:    name,
-		Slug:    d.Slug,
-		Preview: d.Preview,
-		Video:   d.Video,
+		Name:            d.Name,
+		Age:             d.Age,
+		Cardname:        d.Cardname,
+		Description_eng: d.Description_eng,
+		Number_of_years: d.Number_of_years,
+		Video:           d.Video,
+		Preview:         d.Preview,
+		Slug:            d.Slug,
 	}
 }

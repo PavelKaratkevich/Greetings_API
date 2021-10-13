@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-//  PORT_NAME=8000 ADDRESS_NAME=localhost go run .
+//  PORT_NAME=8000 ADDRESS_NAME=localhost DB_PSWD=I240959ko DB_ADDRESS=localhost DB_PORT=3306 DB_NAME=iko_cards go run .
 
 func StartApp() {
 //set router
@@ -35,7 +35,12 @@ func StartApp() {
 }
 
 func ConnectDB() *sqlx.DB {
-	dataSource := fmt.Sprintf("root:I240959ko@tcp(localhost:3306)/iko_cards")
+//dataSource := fmt.Sprintf("root:I240959ko@tcp(localhost:3306)/iko_cards")
+	db_name := os.Getenv("DB_NAME")
+	db_port := os.Getenv("DB_PORT")
+	db_address := os.Getenv("DB_ADDRESS")
+	db_pswd := os.Getenv("DB_PSWD")
+	dataSource := fmt.Sprintf("root:%s@tcp(%s:%s)/%s", db_pswd, db_address, db_port, db_name)
 	client, err := sqlx.Open("mysql", dataSource)
 	if err != nil || client == nil {
 		log.Fatal("Error while opening DB: ", err)

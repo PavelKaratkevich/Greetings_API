@@ -1,16 +1,11 @@
 package handlers
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"greetings/domain"
-	"greetings/dto"
 	"greetings/err"
-	"greetings/utils"
-
-	//err2 "greetings/err"
 	_ "greetings/err"
-	"log"
+	"greetings/utils"
 	"math/rand"
 	"net/http"
 )
@@ -20,7 +15,7 @@ type GreetingHandlers struct {
 }
 
 func (g *GreetingHandlers) GetGreetingByName(w http.ResponseWriter, r *http.Request) {
-	var noNameFoundError err.Error // error for passing 'No name found' to the user
+	var noNameFoundError err.Error
 	params := mux.Vars(r)
 	name := params["name"]
 	response, err := g.repository.GetGreetingByName(name)
@@ -34,37 +29,27 @@ func (g *GreetingHandlers) GetGreetingByName(w http.ResponseWriter, r *http.Requ
 			return
 		}
 	q := rand.Intn(len(response) + 1)
-	reply := response[q].ToDto(name)
+	reply := response[q].ToDto()
 	utils.SendSuccess(w, reply)
 }
 
 func (g *GreetingHandlers) GetGreetingByAge(w http.ResponseWriter, r *http.Request) {
-	var reply []dto.Response
+	var noAgeFoundError err.Error
 	params := mux.Vars(r)
 	age, _ := params["age"]
-	log.Println(age)
 	response, err := g.repository.GetGreetingByAge(age)
 	if err != nil {
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(err.Status)
-		json.NewEncoder(w).Encode(err)
+		utils.SendError(w, err.Status, *err)
+		return
+	} else if response == nil {
+		noAgeFoundError.Message = "No age found"
+		noAgeFoundError.Status = http.StatusNotFound
+		utils.SendError(w, noAgeFoundError.Status, noAgeFoundError)
 		return
 	}
-
 	q := rand.Intn(len(response)+1)
-	k := dto.Response{
-		Name:            "",
-		Age:             age,
-		Cardname:        response[q].Cardname,
-		Description_eng: response[q].Description_eng,
-		Number_of_years: response[q].Number_of_years,
-		Video:           response[q].Video,
-		Preview:         response[q].Preview,
-		Slug:            response[q].Slug,
-	}
-	reply = append(reply, k)
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(reply)
+	reply := response[q].ToDto()
+	utils.SendSuccess(w, reply)
 }
 
 func NewGreetingService(repository domain.GreetingRepository) GreetingHandlers {

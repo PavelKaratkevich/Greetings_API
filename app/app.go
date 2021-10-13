@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	"greetings/handlers"
 	"greetings/repository"
 	"log"
@@ -12,8 +13,6 @@ import (
 	"os"
 	"time"
 )
-
-//  PORT_NAME=8000 ADDRESS_NAME=localhost DB_PSWD=I240959ko DB_ADDRESS=localhost DB_PORT=3306 DB_NAME=iko_cards go run .
 
 func StartApp() {
 //set router
@@ -35,7 +34,12 @@ func StartApp() {
 }
 
 func ConnectDB() *sqlx.DB {
-//dataSource := fmt.Sprintf("root:I240959ko@tcp(localhost:3306)/iko_cards")
+// load environment variables
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+// get environment variables
 	db_name := os.Getenv("DB_NAME")
 	db_port := os.Getenv("DB_PORT")
 	db_address := os.Getenv("DB_ADDRESS")
